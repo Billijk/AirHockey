@@ -208,6 +208,7 @@ void mouse(int button, int state, int x, int y) {
 
 void update(void) {
     game.update();
+    glutPostRedisplay();
 }
 
 int main(int argc, char** argv) {
