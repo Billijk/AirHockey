@@ -1,7 +1,9 @@
 #pragma once
 
-#define FRAME_WIDTH  320
-#define FRAME_HEIGHT 240
+#define FRAME_WIDTH  360
+#define FRAME_HEIGHT 540
+
+#define PI 3.1415926536
 
 const float TABLE_WIDTH = 2.0;
 const float TABLE_LENGTH = 4.0;
