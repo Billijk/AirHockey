@@ -104,6 +104,7 @@ void init(void) {
 void display(void) {
     float K = 1;
     Pos2d a = game.mallet1Pos();
+    Pos2d c = game.mallet2Pos();
     Pos2d b = game.puckPos();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);     // Clear Screen And Depth Buffer
@@ -130,6 +131,13 @@ void display(void) {
     float ax = (a.x - TABLE_WIDTH / 2) * K, ay = (a.y - TABLE_LENGTH / 2) * K;
     for(double i = 0; i < 2 * PI; i += PI / 24)
         glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + ax, sin(i) * MALLET_DIAMETER * K / 2 + ay, 0.0);
+    glEnd();
+    //Draw Circle
+    glBegin(GL_POLYGON);
+    glColor3f(0.0f, 0.5f, 1.0f);
+    float cx = (c.x - TABLE_WIDTH / 2) * K, cy = (c.y - TABLE_LENGTH / 2) * K;
+    for(double i = 0; i < 2 * PI; i += PI / 24)
+        glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + cx, sin(i) * MALLET_DIAMETER * K / 2 + cy, 0.0);
     glEnd();
 
     //Draw Puck

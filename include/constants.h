@@ -1,9 +1,10 @@
 #pragma once
 
-#define FRAME_WIDTH  360
-#define FRAME_HEIGHT 540
+const float EPS = 1e-8;
+const float PI = 3.1415926536;
 
-#define PI 3.1415926536
+const int FRAME_WIDTH = 360;
+const int FRAME_HEIGHT = 540;
 
 const float TABLE_WIDTH = 2.0;
 const float TABLE_LENGTH = 4.0;
