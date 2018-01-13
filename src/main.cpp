@@ -201,9 +201,8 @@ void keyboard(unsigned char key, int x, int y) {
    }
 }
 
-void mouse(int button, int state, int x, int y) {
-    // TODO: ��x,yת����Ϸ�е�x,y���꣬Ȼ�󴫵�gameʵ����
-
+void mouse(int x, int y) {
+    // translate screen coordinates to local coordinates in game
 }
 
 void update(void) {
@@ -221,7 +220,7 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display); 
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
-    glutMouseFunc(mouse);
+    glutPassiveMotionFunc(mouse);
     glutIdleFunc(update);
     glutMainLoop();
     return 0;
