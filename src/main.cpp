@@ -17,11 +17,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
+#include <ctime>
 
 // ASCII字符总共只有0到127，一共128种字符
 #define MAX_CHAR       128
-
-#include <ctime>
 
 unsigned char colorBuf[FRAME_WIDTH*FRAME_HEIGHT*3];
 GLfloat light_position[] = { 0.0, 0.0, 2.0, 0.0 };
@@ -414,6 +413,9 @@ void keyboard(unsigned char key, int x, int y) {
         case 27:
             exit(0);
             break;
+        case 'r':
+            game.init();
+            break;
    }
 }
 void keyboard_special(GLint key, int x, int y) {
@@ -427,6 +429,12 @@ void keyboard_special(GLint key, int x, int y) {
             if (viewx < 1.5f)
                 viewx += VIEW_MOVE_SPEED;
             reshape(framew, frameh);
+            break;
+        case GLUT_KEY_UP:
+            game.difficulty_up();
+            break;
+        case GLUT_KEY_DOWN:
+            game.difficulty_down();
             break;
    }
 }

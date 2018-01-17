@@ -1,18 +1,18 @@
 #pragma once
 #include "common.h"
 
-enum GameState { ON, WIN, LOSE };
+enum GameState { WAIT, ON };
+enum Difficulty { EASY = 15, HARD = 8, NIGHTMARE = 1 };
 
 class Game {
 private:
     Pos2d m_mallet1, m_mallet2, m_puck;
     int m_score1, m_score2;
-    int t;
+    Vec2d v_mallet1, v_mallet2, v_puck;
 
     Pos2d current_mouse_pos;
-
-    Vec2d v_mallet1, v_mallet2, v_puck;
-	
+    
+    Difficulty difficulty;
     GameState m_state;
 
 	bool puck_collide_wall();
@@ -36,6 +36,10 @@ public:
     Pos2d puckPos() { return m_puck; }
     GameState state() { return m_state; }
 
+    void init();
     void moveMouse(float x, float y);	// 接收鼠标移动事件，更新mallet位置
     void update(void);					// 更新puck位置，更新对手位置，计算碰撞事件等……
+
+    void difficulty_up();
+    void difficulty_down();
 };
