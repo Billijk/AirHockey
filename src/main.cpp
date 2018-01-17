@@ -175,9 +175,10 @@ void keyboard(unsigned char key, int x, int y) {
    }
 }
 
-void mouse(int button, int state, int x, int y) {
-    // TODO: ��x,yת����Ϸ�е�x,y���꣬Ȼ�󴫵�gameʵ����
-
+void mouse(int x, int y) {
+    float lx = float(x - 70) / 110;
+    float ly = float(-y + 488) / 108.75;
+    game.moveMouse(lx, ly);
 }
 
 void update(void) {
@@ -195,7 +196,7 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display); 
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
-    glutMouseFunc(mouse);
+    glutPassiveMotionFunc(mouse);
     glutIdleFunc(update);
     glutMainLoop();
     return 0;

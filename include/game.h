@@ -7,14 +7,19 @@ class Game {
 private:
     Pos2d m_mallet1, m_mallet2, m_puck;
     int m_score1, m_score2;
+    int t;
+
+    Pos2d current_mouse_pos;
 
     Vec2d v_mallet1, v_mallet2, v_puck;
 	
     GameState m_state;
 
-    bool check_collide_wall(const Pos2d& obj, const float radius, Vec2d& objv);
-    bool check_collide_objs(const Pos2d& obj1, const float radius1, Vec2d& objv1, 
+    bool collide_wall(const Pos2d& obj, const float radius, Vec2d& objv);
+    bool collide_free_mallet(const Pos2d& obj1, const float radius1, Vec2d& objv1, 
                 const Pos2d& obj2, const float radius2, Vec2d& objv2);
+    bool collide_controlled_mallet(const Pos2d& obj1, const float radius1, Vec2d& objv1, 
+                const Pos2d& obj2, const float radius2, const Vec2d& objv2);
     void update_positions();
 
 public:

@@ -57,19 +57,23 @@ struct Vec2d {
         return *this;
     }
 
-    float norm() {
+    float norm() const {
         return sqrt(x * x + y * y) + EPS;
     }
 
-    Vec2d unit() {
-        
+    Vec2d unit() const {
         return (*this / norm());
     }
 
-    float dot(const Vec2d& a) {
+    // copy a new instance with the same values
+    Vec2d copy() const {
+        return Vec2d(x, y);
+    }
+
+    float dot(const Vec2d& a) const {
         return x * a.x + y * a.y;
     }
-    float cross(const Vec2d& a) {
+    float cross(const Vec2d& a) const {
         return fabs(x * a.y - y * a.x);
     }
 };
