@@ -108,8 +108,8 @@ void display(void) {
     Pos2d b = game.puckPos();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);     // Clear Screen And Depth Buffer
-    glLoadIdentity();                                       // Reset The Current Modelview Matrix
-    glTranslatef(0.0f,0.0f,-6.0f);                          // Move Right 1.5 Units And Into The Screen 6.0
+    //glLoadIdentity();                                       // Reset The Current Modelview Matrix
+    //glTranslatef(0.0f,0.0f,-6.0f);                          // Move Right 1.5 Units And Into The Screen 6.0
 
     //glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);    
     
@@ -131,23 +131,17 @@ void display(void) {
 	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), -2.0);
 	glEnd();
     glBegin(GL_QUADS);
-    glVertex3f(-K * TABLE_WIDTH / 2 + 0.1, -K * TABLE_LENGTH / 2 + 0.1, 0.0);
-    glVertex3f(K * TABLE_WIDTH / 2 + 0.1, -K * TABLE_LENGTH / 2 + 0.1, 0.0);
-    glVertex3f(K * TABLE_WIDTH / 2 + 0.1, K * TABLE_LENGTH / 2 + 0.1, 0.0);
-    glVertex3f(-K * TABLE_WIDTH / 2 + 0.1, K * TABLE_LENGTH / 2 + 0.1, 0.0);
-	glEnd();
-    glBegin(GL_QUADS);
-    glVertex3f(-K * TABLE_WIDTH / 2 + 0.1, -K * TABLE_LENGTH / 2 + 0.1, -2.0);
-    glVertex3f(K * TABLE_WIDTH / 2 + 0.1, -K * TABLE_LENGTH / 2 + 0.1, -2.0);
-    glVertex3f(K * TABLE_WIDTH / 2 + 0.1, K * TABLE_LENGTH / 2 + 0.1, -2.0);
-    glVertex3f(-K * TABLE_WIDTH / 2 + 0.1, K * TABLE_LENGTH / 2 + 0.1, -2.0);
+    glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), -2.0);
+    glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), -2.0);
+    glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), -2.0);
+    glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), -2.0);
 	glEnd();
     glBegin(GL_QUADS);
     glColor3f(0.07f, 0.52f, 0.02f);
-    glVertex3f(-K * TABLE_WIDTH / 2, -K * TABLE_LENGTH / 2, 0.0);
-    glVertex3f(K * TABLE_WIDTH / 2, -K * TABLE_LENGTH / 2, 0.0);
-    glVertex3f(K * TABLE_WIDTH / 2, K * TABLE_LENGTH / 2, 0.0);
-    glVertex3f(-K * TABLE_WIDTH / 2, K * TABLE_LENGTH / 2, 0.0);
+    glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+    glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+    glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+    glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.0);
     glEnd();
 
 	//Draw Pillar
@@ -364,7 +358,7 @@ void reshape (int width, int height) {
 
 	// Change Look at
 //	gluLookAt(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	gluLookAt(0.0f, -3.0f, 3.0f, 0.0f, -2.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	gluLookAt(1.5f, -6.0f, 4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
     glMatrixMode(GL_MODELVIEW);                            // Select The Modelview Matrix
     glLoadIdentity();
@@ -380,6 +374,9 @@ void keyboard(unsigned char key, int x, int y) {
 
 void mouse(int x, int y) {
     // translate screen coordinates to local coordinates in game
+    float lx = float(x - 70) / 110;
+    float ly = float(-y + 488) / 108.75;
+    game.moveMouse(lx, ly);
 }
 
 void update(void) {

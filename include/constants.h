@@ -15,3 +15,8 @@ const float PUCK_DIAMETER = 0.2;
 const float PUCK_HEIGHT = 0.1;
 const float MALLET_DIAMETER = 0.3;
 const float MALLET_HEIGHT = 0.1;
+
+const float MOUSE_SPEED_RATIO = 100;
+
+const float WALL_COLLISION_ENERGY_LOSS_RATIO = 0.95;
+const float MALLET_COLLISION_ENERGY_LOSS_RATIO = 0.75;
