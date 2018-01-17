@@ -13,10 +13,46 @@ Game::Game() {
     m_puck.x = TABLE_WIDTH / 2;
     m_puck.y = TABLE_LENGTH / 2;
     v_mallet2.x = 0.0015f;
-    v_mallet2.y = 0.0013f;
+    v_mallet2.y = 0.0f;
 }
 
 Game::~Game() {
+}
+
+bool Game::puck_collide_wall() {
+	if (m_puck.y < 0) {
+		m_score2 += 1;
+		m_puck.x = TABLE_WIDTH / 2;
+		m_puck.y = TABLE_LENGTH / 2;
+		v_puck -= v_puck;
+		return true;
+	}
+	if (m_puck.y > TABLE_LENGTH) {
+		m_score1 += 1;
+		m_puck.x = TABLE_WIDTH / 2;
+		m_puck.y = TABLE_LENGTH / 2;
+		v_puck -= v_puck;
+		return true;
+    }
+	if (m_puck.y - PUCK_DIAMETER / 2 < EPS && 
+		m_puck.x - PUCK_DIAMETER / 2 > (TABLE_WIDTH - GOAL_WIDTH) / 2 &&
+		m_puck.x + PUCK_DIAMETER / 2 < (TABLE_WIDTH + GOAL_WIDTH) / 2) {
+			return false;
+	}
+	if (m_puck.y + PUCK_DIAMETER / 2 > TABLE_LENGTH - EPS && 
+		m_puck.x - PUCK_DIAMETER / 2 > (TABLE_WIDTH - GOAL_WIDTH) / 2 &&
+		m_puck.x + PUCK_DIAMETER / 2 < (TABLE_WIDTH + GOAL_WIDTH) / 2) {
+			return false;
+	}
+	if ((m_puck.y - PUCK_DIAMETER / 2 < EPS && v_puck.y < 0) || 
+        (m_puck.y + PUCK_DIAMETER / 2 > TABLE_LENGTH - EPS && v_puck.y > 0)) {
+		v_puck.y = -v_puck.y * WALL_COLLISION_ENERGY_LOSS_RATIO;
+	}
+	if ((m_puck.x - PUCK_DIAMETER / 2 < EPS && v_puck.x < 0) || 
+        (m_puck.x + PUCK_DIAMETER / 2 > TABLE_WIDTH - EPS && v_puck.x > 0)) {
+		v_puck.x = -v_puck.x * WALL_COLLISION_ENERGY_LOSS_RATIO;
+	}
+    return false;
 }
 
 bool Game::collide_wall(const Pos2d& obj, const float radius, Vec2d& objv) {
@@ -91,7 +127,7 @@ bool Game::collide_controlled_mallet(const Pos2d& obj1, const float radius1, Vec
 }
 
 void Game::update_positions() {
-    collide_wall(m_puck, PUCK_DIAMETER / 2, v_puck);
+    //collide_wall(m_puck, PUCK_DIAMETER / 2, v_puck);
     collide_wall(m_mallet2, MALLET_DIAMETER / 2, v_mallet2);
     // TODO: also regard mallet2 as controlled object (controlled by AI)
     
@@ -112,6 +148,9 @@ void Game::update_positions() {
 
     // update mallet1 velocity according to current mouse position
     v_mallet1 = (current_mouse_pos - m_mallet1) / MOUSE_SPEED_RATIO;
+
+	// if goal update score
+	puck_collide_wall();
 }
 
 void Game::moveMouse(float x, float y) {
