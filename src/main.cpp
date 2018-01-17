@@ -143,10 +143,19 @@ void display(void) {
     //glEnable(GL_LIGHT0);
 
 	glColor3f(1.0f, 1.0f, 1.0f);
-    glRasterPos3f(-1.0f, 0.0f, 2.0f);
+    glRasterPos3f(-0.35f, 0.0f, 2.0f);
 	char state[20]; 
-	sprintf(state, "%d : %d", game.score1(), game.score2()); 
+	sprintf(state, "Player  %d : %d   AI", game.score1(), game.score2()); 
 	drawString(state);
+
+	//Draw Floor
+	glBegin(GL_QUADS);
+    glColor3f(0.61f, 0.58f, 0.26f);
+    glVertex3f(-K * 100, -K * 100, -2.0);
+    glVertex3f(K * 100, -K * 100, -2.0);
+    glVertex3f(K * 100, K * 100, -2.0);
+    glVertex3f(-K * 100, K * 100, -2.0);
+	glEnd();
 
     //Draw Table
 	glBegin(GL_QUAD_STRIP);
