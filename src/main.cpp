@@ -16,16 +16,16 @@
 #include <glut.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <cmath>
 
 
 unsigned char colorBuf[FRAME_WIDTH*FRAME_HEIGHT*3];
-GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
+GLfloat light_position[] = { 0.0, 0.0, 2.0, 0.0 };
 
 GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 GLfloat mat_shininess[] = { 150.0 };
 GLfloat mat_ambient[] = { 0.7, 0.7, 0.7, 1.0 };
-GLfloat mat_diffuse[] = { 0.7f, 0.1, 0.2, 1.0 };
+GLfloat mat_diffuse[] = { 0.7f, 0.7f, 0.7f, 1.0 };
 
 
 #define checkImageWidth 64
@@ -58,13 +58,13 @@ void makeCheckImages(void) {
 
 
 void init(void) {
-    glShadeModel(GL_SMOOTH);                                // Enable Smooth Shading
+    glShadeModel(GL_FLAT);                                // Enable Smooth Shading
     glClearColor(0.0f, 0.0f, 0.0f, 0.5f);                   // Black Background
     glClearDepth(1.0f);                                     // Depth Buffer Setup
     glEnable(GL_DEPTH_TEST);                                // Enables Depth Testing
     glDepthFunc(GL_LEQUAL);                                 // The Type Of Depth Testing To Do
 
-    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+/*    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
     glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient);
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse);
@@ -97,82 +97,254 @@ void init(void) {
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkImageWidth, 
                 checkImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                otherImage);
+                otherImage);*/
    
 }
 
 void display(void) {
+    float K = 1;
     Pos2d a = game.mallet1Pos();
+    Pos2d c = game.mallet2Pos();
+    Pos2d b = game.puckPos();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);     // Clear Screen And Depth Buffer
     glLoadIdentity();                                       // Reset The Current Modelview Matrix
     glTranslatef(0.0f,0.0f,-6.0f);                          // Move Right 1.5 Units And Into The Screen 6.0
-    glColor3f(0.5f,0.5f,1.0f);                              // Set The Color To Blue One Time Only
 
-    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);    
+    //glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);    
     
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-    
-    glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_LIGHTING);
+    //glEnable(GL_LIGHT0);
 
-    glBindTexture(GL_TEXTURE_2D, texName[1]);
-    glBegin(GL_QUADS);                  // Draw A Quad
-        glColor3f(0.0f,1.0f,0.0f);      // Set The Color To Blue
-        glNormal3f(0.0,1.0,0.0);
-        
-        glTexCoord2f(0.0, 0.0);        glVertex3f( 1.0f, 1.0f,-1.0f);            // Top Right Of The Quad (Top)
-        glTexCoord2f(0.0, 1.0);        glVertex3f(-1.0f, 1.0f,-1.0f);            // Top Left Of The Quad (Top)
-        glTexCoord2f(1.0, 1.0);        glVertex3f(-1.0f, 1.0f, 1.0f);            // Bottom Left Of The Quad (Top)
-        glTexCoord2f(1.0, 0.0);        glVertex3f( 1.0f, 1.0f, 1.0f);            // Bottom Right Of The Quad (Top)
-    glEnd();                            // Done Drawing The Quad
-        
-    glBegin(GL_QUADS);                  // Draw A Quad
-        glColor3f(1.0f,0.5f,0.0f);      // Set The Color To Orange
-        glNormal3f(0.0,1.0,0.0);
-        glTexCoord2f(0.0, 0.0);        glVertex3f( 1.0f,-1.0f, 1.0f);            // Top Right Of The Quad (Bottom)
-        glTexCoord2f(0.0, 1.0);        glVertex3f(-1.0f,-1.0f, 1.0f);            // Top Left Of The Quad (Bottom)
-        glTexCoord2f(1.0, 1.0);        glVertex3f(-1.0f,-1.0f,-1.0f);            // Bottom Left Of The Quad (Bottom)
-        glTexCoord2f(1.0, 0.0);        glVertex3f( 1.0f,-1.0f,-1.0f);            // Bottom Right Of The Quad (Bottom)
-    glEnd();                            // Done Drawing The Quad
-        
-    glBegin(GL_QUADS);                  // Draw A Quad
-        glColor3f(1.0f,0.0f,0.0f);      // Set The Color To Red
-        glNormal3f(0.0,0.0,1.0);
-        glTexCoord2f(0.0, 0.0);        glVertex3f( 1.0f, 1.0f, 1.0f);            // Top Right Of The Quad (Front)
-        glTexCoord2f(0.0, 1.0);        glVertex3f(-1.0f, 1.0f, 1.0f);            // Top Left Of The Quad (Front)
-        glTexCoord2f(1.0, 1.0);        glVertex3f(-1.0f,-1.0f, 1.0f);            // Bottom Left Of The Quad (Front)
-        glTexCoord2f(1.0, 0.0);        glVertex3f( 1.0f,-1.0f, 1.0f);            // Bottom Right Of The Quad (Front)
-    glEnd();                            // Done Drawing The Quad
-    
-    glBindTexture(GL_TEXTURE_2D, texName[0]);
-    
-    glBegin(GL_QUADS);                  // Draw A Quad
-        glColor3f(1.0f,1.0f,0.0f);      // Set The Color To Yellow
-        glNormal3f(0.0,0.0,1.0);
-        glTexCoord2f(0.0, 0.0);        glVertex3f( 1.0f,-1.0f,-1.0f);            // Bottom Left Of The Quad (Back)
-        glTexCoord2f(0.0, 1.0);        glVertex3f(-1.0f,-1.0f,-1.0f);            // Bottom Right Of The Quad (Back)
-        glTexCoord2f(1.0, 1.0);        glVertex3f(-1.0f, 1.0f,-1.0f);            // Top Right Of The Quad (Back)
-        glTexCoord2f(1.0, 0.0);        glVertex3f( 1.0f, 1.0f,-1.0f);            // Top Left Of The Quad (Back)
-    glEnd();                            // Done Drawing The Quad
-        
-    glBegin(GL_QUADS);                  // Draw A Quad
-        glColor3f(0.0f,0.0f,1.0f);      // Set The Color To Blue
-        glNormal3f(1.0,0.0,0.0);
-        glTexCoord2f(0.0, 0.0);        glVertex3f(-1.0f, 1.0f, 1.0f);            // Top Right Of The Quad (Left)
-        glTexCoord2f(0.0, 1.0);        glVertex3f(-1.0f, 1.0f,-1.0f);            // Top Left Of The Quad (Left)
-        glTexCoord2f(1.0, 1.0);        glVertex3f(-1.0f,-1.0f,-1.0f);            // Bottom Left Of The Quad (Left)
-        glTexCoord2f(1.0, 0.0);        glVertex3f(-1.0f,-1.0f, 1.0f);            // Bottom Right Of The Quad (Left)
-    glEnd();                            // Done Drawing The Quad
-        
-    glBegin(GL_QUADS);                  // Draw A Quad
-        glColor3f(1.0f,0.0f,1.0f);      // Set The Color To Violet
-        glNormal3f(1.0,0.0,0.0);    
-        glTexCoord2f(0.0, 0.0);        glVertex3f( 1.0f, 1.0f,-1.0f);            // Top Right Of The Quad (Right)
-        glTexCoord2f(0.0, 1.0);        glVertex3f( 1.0f, 1.0f, 1.0f);            // Top Left Of The Quad (Right)
-        glTexCoord2f(1.0, 1.0);        glVertex3f( 1.0f,-1.0f, 1.0f);            // Bottom Left Of The Quad (Right)
-        glTexCoord2f(1.0, 0.0);        glVertex3f( 1.0f,-1.0f,-1.0f);            // Bottom Right Of The Quad (Right)
-    glEnd();                            // Done Drawing The Quad
+    //Draw Table
+	glBegin(GL_QUAD_STRIP);
+    glColor3f(0.4f, 0.4f, 0.4f);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), -2.0);
+	glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), -2.0);
+	glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), -2.0);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), -2.0);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), -2.0);
+	glEnd();
+    glBegin(GL_QUADS);
+    glVertex3f(-K * TABLE_WIDTH / 2 + 0.1, -K * TABLE_LENGTH / 2 + 0.1, 0.0);
+    glVertex3f(K * TABLE_WIDTH / 2 + 0.1, -K * TABLE_LENGTH / 2 + 0.1, 0.0);
+    glVertex3f(K * TABLE_WIDTH / 2 + 0.1, K * TABLE_LENGTH / 2 + 0.1, 0.0);
+    glVertex3f(-K * TABLE_WIDTH / 2 + 0.1, K * TABLE_LENGTH / 2 + 0.1, 0.0);
+	glEnd();
+    glBegin(GL_QUADS);
+    glVertex3f(-K * TABLE_WIDTH / 2 + 0.1, -K * TABLE_LENGTH / 2 + 0.1, -2.0);
+    glVertex3f(K * TABLE_WIDTH / 2 + 0.1, -K * TABLE_LENGTH / 2 + 0.1, -2.0);
+    glVertex3f(K * TABLE_WIDTH / 2 + 0.1, K * TABLE_LENGTH / 2 + 0.1, -2.0);
+    glVertex3f(-K * TABLE_WIDTH / 2 + 0.1, K * TABLE_LENGTH / 2 + 0.1, -2.0);
+	glEnd();
+    glBegin(GL_QUADS);
+    glColor3f(0.07f, 0.52f, 0.02f);
+    glVertex3f(-K * TABLE_WIDTH / 2, -K * TABLE_LENGTH / 2, 0.0);
+    glVertex3f(K * TABLE_WIDTH / 2, -K * TABLE_LENGTH / 2, 0.0);
+    glVertex3f(K * TABLE_WIDTH / 2, K * TABLE_LENGTH / 2, 0.0);
+    glVertex3f(-K * TABLE_WIDTH / 2, K * TABLE_LENGTH / 2, 0.0);
+    glEnd();
+
+	//Draw Pillar
+	/*glBegin(GL_QUAD_STRIP);
+    glColor3f(0.4f, 0.4f, 0.4f);
+	glVertex3f(-K * (TABLE_WIDTH / 3 - 0.2), -K * (TABLE_LENGTH / 3 - 0.2), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 - 0.2), -K * (TABLE_LENGTH / 3 - 0.2), -4.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 + 0.2), -K * (TABLE_LENGTH / 3 - 0.2), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 + 0.2), -K * (TABLE_LENGTH / 3 - 0.2), -4.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 + 0.2), -K * (TABLE_LENGTH / 3 + 0.2), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 + 0.2), -K * (TABLE_LENGTH / 3 + 0.2), -4.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 - 0.2), -K * (TABLE_LENGTH / 3 + 0.2), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 - 0.2), -K * (TABLE_LENGTH / 3 + 0.2), -4.0);
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+	glVertex3f(-K * (TABLE_WIDTH / 3 - 0.2), K * (TABLE_LENGTH / 3 - 0.2), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 - 0.2), K * (TABLE_LENGTH / 3 - 0.2), -4.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 + 0.2), K * (TABLE_LENGTH / 3 - 0.2), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 + 0.2), K * (TABLE_LENGTH / 3 - 0.2), -4.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 + 0.2), K * (TABLE_LENGTH / 3 + 0.2), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 + 0.2), K * (TABLE_LENGTH / 3 + 0.2), -4.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 - 0.2), K * (TABLE_LENGTH / 3 + 0.2), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 3 - 0.2), K * (TABLE_LENGTH / 3 + 0.2), -4.0);
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+	glVertex3f(K * (TABLE_WIDTH / 3 - 0.2), K * (TABLE_LENGTH / 3 - 0.2), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 - 0.2), K * (TABLE_LENGTH / 3 - 0.2), -4.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 + 0.2), K * (TABLE_LENGTH / 3 - 0.2), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 + 0.2), K * (TABLE_LENGTH / 3 - 0.2), -4.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 + 0.2), K * (TABLE_LENGTH / 3 + 0.2), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 + 0.2), K * (TABLE_LENGTH / 3 + 0.2), -4.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 - 0.2), K * (TABLE_LENGTH / 3 + 0.2), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 - 0.2), K * (TABLE_LENGTH / 3 + 0.2), -4.0);
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+	glVertex3f(K * (TABLE_WIDTH / 3 - 0.2), -K * (TABLE_LENGTH / 3 - 0.2), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 - 0.2), -K * (TABLE_LENGTH / 3 - 0.2), -4.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 + 0.2), -K * (TABLE_LENGTH / 3 - 0.2), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 + 0.2), -K * (TABLE_LENGTH / 3 - 0.2), -4.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 + 0.2), -K * (TABLE_LENGTH / 3 + 0.2), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 + 0.2), -K * (TABLE_LENGTH / 3 + 0.2), -4.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 - 0.2), -K * (TABLE_LENGTH / 3 + 0.2), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 3 - 0.2), -K * (TABLE_LENGTH / 3 + 0.2), -4.0);
+	glEnd();*/
+
+
+	//Draw Wall
+	glBegin(GL_QUAD_STRIP);
+    glColor3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(K * (TABLE_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(K * (TABLE_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(-K * (TABLE_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(-K * (TABLE_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(-K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(-K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+    glColor3f(0.7f, 0.7f, 0.7f);
+	glVertex3f(K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.0);
+	glVertex3f(K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.0);
+	glVertex3f(K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(K * (TABLE_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(K * (TABLE_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.0);
+	glVertex3f(K * (TABLE_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.0);
+	glVertex3f(K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
+	glEnd();
+	glBegin(GL_QUAD_STRIP);
+	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.0);
+	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 2 + 0.1), -K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(-K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2 + 0.1), 0.0);
+	glVertex3f(-K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2 + 0.1), 0.1);
+	glVertex3f(-K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.0);
+	glVertex3f(-K * (GOAL_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(-K * (TABLE_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 2), -K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(-K * (TABLE_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
+	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.0);
+	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
+	glEnd();
+
+
+/*    //Draw Circle
+    glBegin(GL_POLYGON);
+    glColor3f(0.0f, 1.0f, 0.5f);
+    float ax = (a.x - TABLE_WIDTH / 2) * K, ay = (a.y - TABLE_LENGTH / 2) * K;
+    for(double i = 0; i < 2 * PI; i += PI / 24)
+        glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + ax, sin(i) * MALLET_DIAMETER * K / 2 + ay, 0.0);
+    glEnd();
+    //Draw Circle
+    glBegin(GL_POLYGON);
+    glColor3f(0.0f, 0.5f, 1.0f);
+    float cx = (c.x - TABLE_WIDTH / 2) * K, cy = (c.y - TABLE_LENGTH / 2) * K;
+    for(double i = 0; i < 2 * PI; i += PI / 24)
+        glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + cx, sin(i) * MALLET_DIAMETER * K / 2 + cy, 0.0);
+    glEnd();
+
+    //Draw Puck
+    glBegin(GL_POLYGON);
+    glColor3f(1.0f, 0.2f, 0.3f);
+    float bx = (b.x - TABLE_WIDTH / 2) * K, by = (b.y - TABLE_LENGTH / 2) * K;
+    for(double i = 0; i < 2 * PI; i += PI / 24)
+        glVertex3f(cos(i) * PUCK_DIAMETER * K / 2 + bx, sin(i) * PUCK_DIAMETER * K / 2 + by, 0.0);
+    glEnd();*/
+
+
+	//Draw Mallet1
+    glBegin(GL_QUAD_STRIP);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    float ax = (a.x - TABLE_WIDTH / 2) * K, ay = (a.y - TABLE_LENGTH / 2) * K;
+    for(double i = 0; i < 2 * PI; i += PI / 24)
+	{
+        glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + ax, sin(i) * MALLET_DIAMETER * K / 2 + ay, 0.0);
+		glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + ax, sin(i) * MALLET_DIAMETER * K / 2 + ay, 0.1);
+	}
+    glEnd();
+	glBegin(GL_TRIANGLE_FAN);
+    glColor3f(0.0f, 1.0f, 0.5f);
+    glVertex3f(ax, ay, 0.0f);
+    glVertex3f(ax, ay, 0.1f);
+    for (double i = 0; i <= 2 * PI; i += PI / 24)  
+    {  
+        glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + ax, sin(i) * MALLET_DIAMETER * K / 2 + ay, 0.0);
+		glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + ax, sin(i) * MALLET_DIAMETER * K / 2 + ay, 0.1);
+    }  
+    glEnd();
+
+    //Draw Mallet2
+    glBegin(GL_QUAD_STRIP);
+    glColor3f(0.0f, 0.5f, 1.0f);
+    float cx = (c.x - TABLE_WIDTH / 2) * K, cy = (c.y - TABLE_LENGTH / 2) * K;
+    for(double i = 0; i <= 2 * PI; i += PI / 24)
+	{
+		glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + cx, sin(i) * MALLET_DIAMETER * K / 2 + cy, 0.0);
+		glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + cx, sin(i) * MALLET_DIAMETER * K / 2 + cy, 0.1);
+	}
+    glEnd();
+	glBegin(GL_TRIANGLE_FAN);
+    glColor3f(0.0f, 0.5f, 1.0f);
+    glVertex3f(cx, cy, 0.0f);
+    glVertex3f(cx, cy, 0.1f);
+    for (double i = 0; i <= 2 * PI; i += PI / 24) 
+    {
+        glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + cx, sin(i) * MALLET_DIAMETER * K / 2 + cy, 0.0);
+		glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + cx, sin(i) * MALLET_DIAMETER * K / 2 + cy, 0.1);
+    }
+    glEnd();
+
+    //Draw Puck
+    glBegin(GL_POLYGON);
+    glColor3f(1.0f, 0.2f, 0.3f);
+    float bx = (b.x - TABLE_WIDTH / 2) * K, by = (b.y - TABLE_LENGTH / 2) * K;
+    for(double i = 0; i <= 2 * PI; i += PI / 24)
+	{
+		glVertex3f(cos(i) * PUCK_DIAMETER * K / 2 + bx, sin(i) * PUCK_DIAMETER * K / 2 + by, 0.0);
+		glVertex3f(cos(i) * PUCK_DIAMETER * K / 2 + bx, sin(i) * PUCK_DIAMETER * K / 2 + by, 0.1);
+	}
+    glEnd();
+	glBegin(GL_TRIANGLE_FAN);
+    glColor3f(1.0f, 0.2f, 0.3f);
+    glVertex3f(bx, by, 0.0f);
+    glVertex3f(bx, by, 0.1f);
+    for (double i = 0; i <= 2 * PI; i += PI / 24) 
+    {
+        glVertex3f(cos(i) * PUCK_DIAMETER * K / 2 + bx, sin(i) * PUCK_DIAMETER * K / 2 + by, 0.0);
+		glVertex3f(cos(i) * PUCK_DIAMETER * K / 2 + bx, sin(i) * PUCK_DIAMETER * K / 2 + by, 0.1);
+    }
+    glEnd();
 
     glutSwapBuffers();
 }
@@ -186,12 +358,17 @@ void reshape (int width, int height) {
 
     glMatrixMode(GL_PROJECTION);                        // Select The Projection Matrix
     glLoadIdentity();                                    // Reset The Projection Matrix
-
+	
     // Calculate The Aspect Ratio Of The Window
     gluPerspective(45.0f, (GLfloat)width / (GLfloat)height, 0.1f, 100.0f);
 
+	// Change Look at
+//	gluLookAt(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	gluLookAt(0.0f, -3.0f, 3.0f, 0.0f, -2.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+
     glMatrixMode(GL_MODELVIEW);                            // Select The Modelview Matrix
-    glLoadIdentity();}
+    glLoadIdentity();
+}
 
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
