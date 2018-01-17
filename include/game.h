@@ -23,6 +23,7 @@ private:
 
     void update_positions();
     void AI_move();
+    void init();
 
 public:
     Game();

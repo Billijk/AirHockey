@@ -6,12 +6,7 @@
 
 Game::Game() {
     t = 0;
-    m_mallet1.x = 0.4;
-    m_mallet1.y = 0.9;
-    m_mallet2.x = 0.9;
-    m_mallet2.y = 3.0;
-    m_puck.x = TABLE_WIDTH / 2;
-    m_puck.y = TABLE_LENGTH / 2;
+    init();
 }
 
 Game::~Game() {
@@ -147,6 +142,15 @@ void Game::AI_move() {
         v_mallet2.y = 0;
     if (v_mallet2.norm() > MAX_MALLET_SPEED)
         v_mallet2 = v_mallet2.unit() * MAX_MALLET_SPEED;
+}
+
+void Game::init() {
+    m_mallet1.x = TABLE_WIDTH / 2;
+    m_mallet1.y = TABLE_LENGTH / 5;
+    m_mallet2.x = TABLE_WIDTH / 2;
+    m_mallet2.y = TABLE_LENGTH / 5 * 4;
+    m_puck.x = TABLE_WIDTH / 2;
+    m_puck.y = TABLE_LENGTH / 2;
 }
 
 void Game::update() {
