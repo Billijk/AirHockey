@@ -23,6 +23,7 @@ private:
                 const Pos2d& obj2, const float radius2, const Vec2d& objv2);
 
     void update_positions();
+    void AI_move();
 
 public:
     Game();

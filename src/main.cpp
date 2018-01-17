@@ -21,6 +21,8 @@
 // ASCII字符总共只有0到127，一共128种字符
 #define MAX_CHAR       128
 
+#include <ctime>
+
 unsigned char colorBuf[FRAME_WIDTH*FRAME_HEIGHT*3];
 GLfloat light_position[] = { 0.0, 0.0, 2.0, 0.0 };
 
@@ -38,6 +40,8 @@ static GLubyte otherImage[checkImageHeight][checkImageWidth][4];
 static GLuint texName[2];
 
 Game game;
+float viewx = 0;
+int frameh = FRAME_HEIGHT, framew = FRAME_WIDTH;
 
 void makeCheckImages(void) {
     int i, j, c;
@@ -376,6 +380,8 @@ void reshape (int width, int height) {
         height=1;                                        // Making Height Equal One
     }
 
+    frameh = height; framew = width;
+
     glViewport(0,0,width,height);                        // Reset The Current Viewport
 
     glMatrixMode(GL_PROJECTION);                        // Select The Projection Matrix
@@ -386,7 +392,7 @@ void reshape (int width, int height) {
 
 	// Change Look at
 //	gluLookAt(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	gluLookAt(1.2f, -6.0f, 4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	gluLookAt(viewx, -4.0f, 4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
 //	gluOrtho2D(0, width, 0, height); 
 
@@ -398,6 +404,20 @@ void keyboard(unsigned char key, int x, int y) {
     switch (key) {
         case 27:
             exit(0);
+            break;
+   }
+}
+void keyboard_special(GLint key, int x, int y) {
+    switch (key) {
+        case GLUT_KEY_LEFT:
+            if (viewx > -1.5f)
+                viewx -= VIEW_MOVE_SPEED;
+            reshape(framew, frameh);
+            break;
+        case GLUT_KEY_RIGHT:
+            if (viewx < 1.5f)
+                viewx += VIEW_MOVE_SPEED;
+            reshape(framew, frameh);
             break;
    }
 }
@@ -417,7 +437,7 @@ void mouse(int x, int y) {
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
 
 	winX = x; 
-	winY = FRAME_HEIGHT - y;
+	winY = frameh - y;
 	
     GLdouble npx, npy, npz;    // near point
 	gluUnProject(winX, winY, 0.0, modelview, projection, viewport, &npx, &npy, &npz);
@@ -443,6 +463,7 @@ void update(void) {
 }
 
 int main(int argc, char** argv) {
+    srand(time(0));
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(FRAME_WIDTH, FRAME_HEIGHT); 
@@ -452,6 +473,7 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display); 
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
+    glutSpecialFunc(keyboard_special);
     glutPassiveMotionFunc(mouse);
     glutIdleFunc(update);
     glutMainLoop();
