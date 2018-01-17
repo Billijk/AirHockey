@@ -5,7 +5,7 @@
 #include <cmath>
 
 Game::Game() {
-    difficulty = EASY;
+    m_difficulty = EASY;
     init();
 }
 
@@ -160,7 +160,7 @@ void Game::moveMouse(float x, float y) {
 void Game::AI_move() {
 
     // only by a chance it can react
-    if (rand() % (int)difficulty) return;
+    if (rand() % (int)m_difficulty) return;
 
     if (m_puck.y < TABLE_LENGTH / 2 - PUCK_DIAMETER / 2) {
         // if the puck is in the other half, stay back
@@ -201,11 +201,11 @@ void Game::update() {
 }
 
 void Game::difficulty_up() {
-    if (difficulty == EASY) difficulty = HARD;
-    else if (difficulty == HARD) difficulty = NIGHTMARE;
+    if (m_difficulty == EASY) m_difficulty = HARD;
+    else if (m_difficulty == HARD) m_difficulty = NIGHTMARE;
 }
 
 void Game::difficulty_down() {
-    if (difficulty == HARD) difficulty = EASY;
-    else if (difficulty == NIGHTMARE) difficulty = HARD;
+    if (m_difficulty == HARD) m_difficulty = EASY;
+    else if (m_difficulty == NIGHTMARE) m_difficulty = HARD;
 }

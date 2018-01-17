@@ -143,9 +143,14 @@ void display(void) {
 
 	glColor3f(1.0f, 1.0f, 1.0f);
     glRasterPos3f(-0.35f, 0.0f, 2.0f);
-	char state[20]; 
-	sprintf(state, "Player  %d : %d   AI", game.score1(), game.score2()); 
-	drawString(state);
+	char score[50]; 
+	char difficulty[50]; 
+	sprintf(score, "Player  %d : %d   AI", game.score1(), game.score2()); 
+	drawString(score);
+    glRasterPos3f(-0.35f, 0.0f, 1.8f);
+	sprintf(difficulty, "Difficulty : %s", game.difficulty().c_str()); 
+	drawString(difficulty);
+
 
 	//Draw Floor
 	glBegin(GL_QUADS);

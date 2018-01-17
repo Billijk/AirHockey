@@ -1,5 +1,6 @@
 #pragma once
 #include "common.h"
+#include <string>
 
 enum GameState { WAIT, ON };
 enum Difficulty { EASY = 15, HARD = 8, NIGHTMARE = 1 };
@@ -12,7 +13,7 @@ private:
 
     Pos2d current_mouse_pos;
     
-    Difficulty difficulty;
+    Difficulty m_difficulty;
     GameState m_state;
 
 	bool puck_collide_wall();
@@ -35,6 +36,15 @@ public:
     Pos2d mallet2Pos() { return m_mallet2; }
     Pos2d puckPos() { return m_puck; }
     GameState state() { return m_state; }
+	std::string difficulty() { 
+		switch (m_difficulty) {
+		case EASY :
+			return "EASY";
+		case HARD :
+			return "HARD";
+		case NIGHTMARE :
+			return "NIGHTMARE";}
+	}
 
     void init();
     void moveMouse(float x, float y);	// 接收鼠标移动事件，更新mallet位置
