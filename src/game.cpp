@@ -20,19 +20,29 @@ Game::~Game() {
 }
 
 bool Game::collide_wall(const Pos2d& obj, const float radius, Vec2d& objv) {
+    bool collide_flag = false;
     // check left and right
-    if ((obj.x - radius < 0 && objv.x < 0) || 
-        (obj.x + radius > TABLE_WIDTH && objv.x > 0)) objv.x = -objv.x;
+    if ((obj.x - radius < EPS && objv.x < 0) || 
+        (obj.x + radius > TABLE_WIDTH - EPS && objv.x > 0)) {
+            collide_flag = true;
+            objv.x = -objv.x * WALL_COLLISION_ENERGY_LOSS_RATIO;
+    }
     // check top and bottom
-    if ((obj.y - radius < 0 && objv.y < 0) || 
-        (obj.y + radius > TABLE_LENGTH && objv.y > 0)) objv.y = -objv.y;
-    return true;
+    if ((obj.y - radius < EPS && objv.y < 0) || 
+        (obj.y + radius > TABLE_LENGTH - EPS && objv.y > 0)) {
+            collide_flag = true;
+            objv.y = -objv.y * WALL_COLLISION_ENERGY_LOSS_RATIO;
+    }
+    return collide_flag;
 }
 
 bool Game::collide_free_mallet(const Pos2d& obj1, const float radius1, Vec2d& objv1, 
                 const Pos2d& obj2, const float radius2, Vec2d& objv2) {
     // first check if collide
-    if ((obj1 - obj2).norm() > (radius1 + radius2) + EPS) return false;
+    float dist = (obj1 - obj2).norm();
+    if (dist > (radius1 + radius2) + EPS) return false;
+    // check if distance increase if stay on current situation
+    if ((obj1 + objv1 - obj2 - objv2).norm() > dist) return false;
 
     // calculate new velocity for two objects
     Vec2d norm12 = (obj2 - obj1).unit();
@@ -51,8 +61,8 @@ bool Game::collide_free_mallet(const Pos2d& obj1, const float radius1, Vec2d& ob
     Vec2d d_v2 = -d_v1;
     float cos1 = v1_unit.dot(norm12);
     float cos2 = v2_unit.dot(norm12);
-    objv1 -= norm12 * (cos1 * v1 - cos2 * v2);
-    objv2 -= norm12 * (cos2 * v2 - cos1 * v1);
+    objv1 = objv1 - norm12 * cos1 * v1 + norm12 * cos2 * v2 * MALLET_COLLISION_ENERGY_LOSS_RATIO;
+    objv2 = objv2 - norm12 * cos2 * v2 + norm12 * cos1 * v1 * MALLET_COLLISION_ENERGY_LOSS_RATIO;
 
     return true;
 }
@@ -60,7 +70,11 @@ bool Game::collide_free_mallet(const Pos2d& obj1, const float radius1, Vec2d& ob
 bool Game::collide_controlled_mallet(const Pos2d& obj1, const float radius1, Vec2d& objv1, 
                 const Pos2d& obj2, const float radius2, const Vec2d& objv2) {
     // first check if collide
-    if ((obj1 - obj2).norm() > (radius1 + radius2) + EPS) return false;
+    float dist = (obj1 - obj2).norm();
+    if (dist > (radius1 + radius2) + EPS) return false;
+
+    // check if distance increase if stay on current situation
+    if ((obj1 + objv1 - obj2 - objv2).norm() > dist) return false;
 
     // translate to mallet coordinates
     Vec2d v1_ = objv1 - objv2;
@@ -68,7 +82,7 @@ bool Game::collide_controlled_mallet(const Pos2d& obj1, const float radius1, Vec
     // calculate elastic collision
     Vec2d norm12 = (obj2 - obj1).unit();
     float cos1 = v1_.unit().dot(norm12);
-    Vec2d newv = v1_ - norm12 * cos1 * v1_.norm() * 2;
+    Vec2d newv = v1_ - norm12 * cos1 * v1_.norm() * (1 + MALLET_COLLISION_ENERGY_LOSS_RATIO);
 
     // translate back to normal coordinates
     objv1 = newv + objv2;
@@ -84,23 +98,19 @@ void Game::update_positions() {
     collide_controlled_mallet(m_puck, PUCK_DIAMETER / 2, v_puck, m_mallet1, MALLET_DIAMETER / 2, v_mallet1);
     collide_free_mallet(m_puck, PUCK_DIAMETER / 2, v_puck, m_mallet2, MALLET_DIAMETER / 2, v_mallet2);
     collide_controlled_mallet(m_mallet2, MALLET_DIAMETER / 2, v_mallet2, m_mallet1, MALLET_DIAMETER / 2, v_mallet1);
-
-    // Randomly update mallet v
-    /*if (rand() % 100000 == 0) {
-        float x = float(rand() % 10 - 5) / 10000;
-        float y = float(rand() % 10 - 5) / 10000;
-        v_mallet1.x += x; v_mallet1.y += y;
-    }
-    if (rand() % 100000 == 0) {
-        float x = float(rand() % 10 - 5) / 10000;
-        float y = float(rand() % 10 - 5) / 10000;
-        v_mallet2.x += x; v_mallet2.y += y;
-    }*/
     
-    m_puck += v_puck;
-    m_mallet1 += v_mallet1;
-    m_mallet2 += v_mallet2;
+    // update object positions
+    if (!collide_wall(m_puck, PUCK_DIAMETER / 2, v_puck.copy()))
+        m_puck += v_puck;
+    else v_puck = Vec2d(0, 0);
 
+    if (!collide_controlled_mallet(m_puck, PUCK_DIAMETER / 2, v_puck.copy(), m_mallet1, MALLET_DIAMETER / 2, v_mallet1.copy()))
+        m_mallet1 += v_mallet1;
+    
+    if (!collide_controlled_mallet(m_puck, PUCK_DIAMETER / 2, v_puck.copy(), m_mallet2, MALLET_DIAMETER / 2, v_mallet2.copy()))
+        m_mallet2 += v_mallet2;
+
+    // update mallet1 velocity according to current mouse position
     v_mallet1 = (current_mouse_pos - m_mallet1) / MOUSE_SPEED_RATIO;
 }
 
@@ -112,21 +122,7 @@ void Game::moveMouse(float x, float y) {
 
     // save current valid mallet destination
     current_mouse_pos = Vec2d(x, y);
-    
-    /*if (t - last_t < MOUSE_DELAY_THRESHOLD) {
-        mouse_move_cnt ++;
-        t_cnt += t - last_t;
-        if (mouse_move_cnt == MOUSE_MOVE_ACCUMULATE) {
-            v_mallet1 = (Vec2d(x, y) - move_start_pos) / t_cnt;
-            mouse_move_cnt = t_cnt = 0;
-            printf("v_mallet1 (x %.6f, y %.6f)\n", v_mallet1.x, v_mallet1.y);
-        } else if (mouse_move_cnt == 1) {
-            move_start_pos = m_mallet1;
-        }
-    } else {
-        mouse_move_cnt = t_cnt = 0;
-    }
-    last_t = t;*/
+
 }
 
 void Game::update() {
