@@ -5,7 +5,7 @@
 #include <cmath>
 
 Game::Game() {
-    t = 0;
+    difficulty = EASY;
     init();
 }
 
@@ -15,16 +15,12 @@ Game::~Game() {
 bool Game::puck_collide_wall() {
 	if (m_puck.y < 0) {
 		m_score2 += 1;
-		m_puck.x = TABLE_WIDTH / 2;
-		m_puck.y = TABLE_LENGTH / 2;
-		v_puck -= v_puck;
+		init();
 		return true;
 	}
 	if (m_puck.y > TABLE_LENGTH) {
 		m_score1 += 1;
-		m_puck.x = TABLE_WIDTH / 2;
-		m_puck.y = TABLE_LENGTH / 2;
-		v_puck -= v_puck;
+		init();
 		return true;
     }
 	if (m_puck.y - PUCK_DIAMETER / 2 < EPS && 
@@ -158,10 +154,13 @@ void Game::moveMouse(float x, float y) {
 
     // save current valid mallet destination
     current_mouse_pos = Vec2d(x, y);
-
+    m_state = ON;
 }
 
 void Game::AI_move() {
+
+    // only by a chance it can react
+    if (rand() % (int)difficulty) return;
 
     if (m_puck.y < TABLE_LENGTH / 2 - PUCK_DIAMETER / 2) {
         // if the puck is in the other half, stay back
@@ -184,16 +183,29 @@ void Game::AI_move() {
 }
 
 void Game::init() {
+    m_state = WAIT;
     m_mallet1.x = TABLE_WIDTH / 2;
     m_mallet1.y = TABLE_LENGTH / 5;
     m_mallet2.x = TABLE_WIDTH / 2;
     m_mallet2.y = TABLE_LENGTH / 5 * 4;
     m_puck.x = TABLE_WIDTH / 2;
     m_puck.y = TABLE_LENGTH / 2;
+    v_puck *= 0;
 }
 
 void Game::update() {
-    t ++;
-    update_positions();
-    AI_move();
+    if (m_state == ON) {
+        update_positions();
+        AI_move();
+    }
+}
+
+void Game::difficulty_up() {
+    if (difficulty == EASY) difficulty = HARD;
+    else if (difficulty == HARD) difficulty = NIGHTMARE;
+}
+
+void Game::difficulty_down() {
+    if (difficulty == HARD) difficulty = EASY;
+    else if (difficulty == NIGHTMARE) difficulty = HARD;
 }
