@@ -15,6 +15,7 @@ private:
 	
     GameState m_state;
 
+	bool puck_collide_wall();
     bool collide_wall(const Pos2d& obj, const float radius, Vec2d& objv);
     bool collide_free_mallet(const Pos2d& obj1, const float radius1, Vec2d& objv1, 
                 const Pos2d& obj2, const float radius2, Vec2d& objv2);

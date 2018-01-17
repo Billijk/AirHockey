@@ -17,6 +17,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
+
+// ASCII字符总共只有0到127，一共128种字符
+#define MAX_CHAR       128
+
 #include <ctime>
 
 unsigned char colorBuf[FRAME_WIDTH*FRAME_HEIGHT*3];
@@ -103,6 +107,26 @@ void init(void) {
    
 }
 
+
+void drawString(const char* str) {
+    static int isFirstCall = 1;
+    static GLuint lists;
+
+    if( isFirstCall ) { // 如果是第一次调用，执行初始化
+                        // 为每一个ASCII字符产生一个显示列表
+        isFirstCall = 0;
+
+        // 申请MAX_CHAR个连续的显示列表编号
+        lists = glGenLists(MAX_CHAR);
+
+        // 把每个字符的绘制命令都装到对应的显示列表中
+        wglUseFontBitmaps(wglGetCurrentDC(), 0, MAX_CHAR, lists);
+    }
+    // 调用每个字符对应的显示列表，绘制每个字符
+    for(; *str!='\0'; ++str)
+        glCallList(lists + *str);
+}
+
 void display(void) {
     float K = 1;
     Pos2d a = game.mallet1Pos();
@@ -117,6 +141,12 @@ void display(void) {
     
     //glEnable(GL_LIGHTING);
     //glEnable(GL_LIGHT0);
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+    glRasterPos3f(-1.0f, 0.0f, 2.0f);
+	char state[20]; 
+	sprintf(state, "%d : %d", game.score1(), game.score2()); 
+	drawString(state);
 
     //Draw Table
 	glBegin(GL_QUAD_STRIP);
@@ -363,6 +393,8 @@ void reshape (int width, int height) {
 	// Change Look at
 //	gluLookAt(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 	gluLookAt(viewx, -4.0f, 4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+
+//	gluOrtho2D(0, width, 0, height); 
 
     glMatrixMode(GL_MODELVIEW);                            // Select The Modelview Matrix
     glLoadIdentity();
