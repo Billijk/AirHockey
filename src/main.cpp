@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
-
+#include <ctime>
 
 unsigned char colorBuf[FRAME_WIDTH*FRAME_HEIGHT*3];
 GLfloat light_position[] = { 0.0, 0.0, 2.0, 0.0 };
@@ -431,6 +431,7 @@ void update(void) {
 }
 
 int main(int argc, char** argv) {
+    srand(time(0));
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(FRAME_WIDTH, FRAME_HEIGHT); 

@@ -12,8 +12,6 @@ Game::Game() {
     m_mallet2.y = 3.0;
     m_puck.x = TABLE_WIDTH / 2;
     m_puck.y = TABLE_LENGTH / 2;
-    v_mallet2.x = 0.0015f;
-    v_mallet2.y = 0.0013f;
 }
 
 Game::~Game() {
@@ -82,7 +80,11 @@ bool Game::collide_controlled_mallet(const Pos2d& obj1, const float radius1, Vec
     // calculate elastic collision
     Vec2d norm12 = (obj2 - obj1).unit();
     float cos1 = v1_.unit().dot(norm12);
-    Vec2d newv = v1_ - norm12 * cos1 * v1_.norm() * (1 + MALLET_COLLISION_ENERGY_LOSS_RATIO);
+    Vec2d newv;
+    if (objv2.norm() < EPS)
+        newv = v1_ - norm12 * cos1 * v1_.norm() * (1 + MALLET_COLLISION_ENERGY_LOSS_RATIO);
+    else
+        newv = v1_ - norm12 * cos1 * v1_.norm() * (1 + MALLET_HIT_ENERGY_LOSS_RATIO);
 
     // translate back to normal coordinates
     objv1 = newv + objv2;
@@ -96,8 +98,8 @@ void Game::update_positions() {
     // TODO: also regard mallet2 as controlled object (controlled by AI)
     
     collide_controlled_mallet(m_puck, PUCK_DIAMETER / 2, v_puck, m_mallet1, MALLET_DIAMETER / 2, v_mallet1);
-    collide_free_mallet(m_puck, PUCK_DIAMETER / 2, v_puck, m_mallet2, MALLET_DIAMETER / 2, v_mallet2);
-    collide_controlled_mallet(m_mallet2, MALLET_DIAMETER / 2, v_mallet2, m_mallet1, MALLET_DIAMETER / 2, v_mallet1);
+    collide_controlled_mallet(m_puck, PUCK_DIAMETER / 2, v_puck, m_mallet2, MALLET_DIAMETER / 2, v_mallet2);
+    //collide_controlled_mallet(m_mallet2, MALLET_DIAMETER / 2, v_mallet2, m_mallet1, MALLET_DIAMETER / 2, v_mallet1);
     
     // update object positions
     //if (!collide_wall(m_puck, PUCK_DIAMETER / 2, v_puck.copy()))
@@ -125,7 +127,30 @@ void Game::moveMouse(float x, float y) {
 
 }
 
+void Game::AI_move() {
+
+    if (m_puck.y < TABLE_LENGTH / 2 - PUCK_DIAMETER / 2) {
+        // if the puck is in the other half, stay back
+        v_mallet2.y = (4 * TABLE_LENGTH / 5 - m_mallet2.y);
+        v_mallet2.x = (m_puck.x - m_mallet2.x);
+    } else {
+        if (m_mallet2.y > m_puck.y + PUCK_DIAMETER / 2)
+            // if behind puck and I can hit it, then go
+            v_mallet2 = m_puck - m_mallet2;
+        else {
+            // else try to defend the goal
+            v_mallet2 = Vec2d(TABLE_WIDTH / 2, TABLE_LENGTH) - m_mallet2;
+        }
+    }
+
+    if (m_mallet2.y < TABLE_LENGTH / 2 + MALLET_DIAMETER / 2 && v_mallet2.y < 0)
+        v_mallet2.y = 0;
+    if (v_mallet2.norm() > MAX_MALLET_SPEED)
+        v_mallet2 = v_mallet2.unit() * MAX_MALLET_SPEED;
+}
+
 void Game::update() {
     t ++;
     update_positions();
+    AI_move();
 }
