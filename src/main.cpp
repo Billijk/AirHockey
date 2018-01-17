@@ -358,7 +358,7 @@ void reshape (int width, int height) {
 
 	// Change Look at
 //	gluLookAt(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	gluLookAt(1.5f, -6.0f, 4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	gluLookAt(1.2f, -6.0f, 4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
     glMatrixMode(GL_MODELVIEW);                            // Select The Modelview Matrix
     glLoadIdentity();
@@ -374,8 +374,36 @@ void keyboard(unsigned char key, int x, int y) {
 
 void mouse(int x, int y) {
     // translate screen coordinates to local coordinates in game
-    float lx = float(x - 70) / 110;
-    float ly = float(-y + 488) / 108.75;
+    //射线选择功能
+	GLfloat  winX, winY;
+	
+	//变换要绘图函数里的顺序一样，否则坐标转换会产生错误
+    GLint    viewport[4];   
+    GLdouble modelview[16];   
+    GLdouble projection[16];   
+  
+    glGetIntegerv(GL_VIEWPORT, viewport); // 得到的是最后一个设置视口的参数  
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);   
+    glGetDoublev(GL_PROJECTION_MATRIX, projection);
+
+	winX = x; 
+	winY = FRAME_HEIGHT - y;
+	
+    GLdouble npx, npy, npz;    // near point
+	gluUnProject(winX, winY, 0.0, modelview, projection, viewport, &npx, &npy, &npz);
+
+    GLdouble fpx, fpy, fpz;    // far point
+	gluUnProject(winX, winY, 1.0, modelview, projection, viewport, &fpx, &fpy, &fpz); 
+
+	//cal the vector of ray
+	GLdouble px, py, pz;
+    px = fpx - npx;
+    py = fpy - npy;
+    pz = fpz - npz;
+
+    float t = -(float)(fpz / pz);
+    float lx = fpx + t * px + TABLE_WIDTH / 2;
+    float ly = fpy + t * py + TABLE_LENGTH / 2;
     game.moveMouse(lx, ly);
 }
 
