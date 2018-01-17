@@ -36,6 +36,8 @@ static GLubyte otherImage[checkImageHeight][checkImageWidth][4];
 static GLuint texName[2];
 
 Game game;
+float viewx = 0;
+int frameh = FRAME_HEIGHT, framew = FRAME_WIDTH;
 
 void makeCheckImages(void) {
     int i, j, c;
@@ -348,6 +350,8 @@ void reshape (int width, int height) {
         height=1;                                        // Making Height Equal One
     }
 
+    frameh = height; framew = width;
+
     glViewport(0,0,width,height);                        // Reset The Current Viewport
 
     glMatrixMode(GL_PROJECTION);                        // Select The Projection Matrix
@@ -358,7 +362,7 @@ void reshape (int width, int height) {
 
 	// Change Look at
 //	gluLookAt(0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-	gluLookAt(1.2f, -6.0f, 4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	gluLookAt(viewx, -4.0f, 4.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
     glMatrixMode(GL_MODELVIEW);                            // Select The Modelview Matrix
     glLoadIdentity();
@@ -368,6 +372,20 @@ void keyboard(unsigned char key, int x, int y) {
     switch (key) {
         case 27:
             exit(0);
+            break;
+   }
+}
+void keyboard_special(GLint key, int x, int y) {
+    switch (key) {
+        case GLUT_KEY_LEFT:
+            if (viewx > -1.5f)
+                viewx -= VIEW_MOVE_SPEED;
+            reshape(framew, frameh);
+            break;
+        case GLUT_KEY_RIGHT:
+            if (viewx < 1.5f)
+                viewx += VIEW_MOVE_SPEED;
+            reshape(framew, frameh);
             break;
    }
 }
@@ -387,7 +405,7 @@ void mouse(int x, int y) {
     glGetDoublev(GL_PROJECTION_MATRIX, projection);
 
 	winX = x; 
-	winY = FRAME_HEIGHT - y;
+	winY = frameh - y;
 	
     GLdouble npx, npy, npz;    // near point
 	gluUnProject(winX, winY, 0.0, modelview, projection, viewport, &npx, &npy, &npz);
@@ -422,6 +440,7 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display); 
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
+    glutSpecialFunc(keyboard_special);
     glutPassiveMotionFunc(mouse);
     glutIdleFunc(update);
     glutMainLoop();
