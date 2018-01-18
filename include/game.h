@@ -3,7 +3,7 @@
 #include <string>
 
 enum GameState { WAIT, ON };
-enum Difficulty { EASY = 15, HARD = 8, NIGHTMARE = 1 };
+enum Difficulty { EASY = 30, HARD = 10, NIGHTMARE = 1 };
 
 class Game {
 private:

@@ -22,4 +22,5 @@ const float VIEW_MOVE_SPEED = 0.1;
 const float WALL_COLLISION_ENERGY_LOSS_RATIO = 0.95;
 const float MALLET_HIT_ENERGY_LOSS_RATIO = 0.25;
 const float MALLET_COLLISION_ENERGY_LOSS_RATIO = 0.65;
-const float MAX_MALLET_SPEED = 0.002;
+const float MAX_AI_SPEED_EASY = 0.0015;
+const float MAX_AI_SPEED = 0.003;

@@ -175,28 +175,47 @@ void Game::moveMouse(float x, float y) {
 }
 
 void Game::AI_move() {
+    // EASY: always chase the puck
+    // HARD: add defence strategy
+    // NIGHTMARE: move faster
 
     // only by a chance it can react
     if (rand() % (int)m_difficulty) return;
 
-    if (m_puck.y < TABLE_LENGTH / 2 - PUCK_DIAMETER / 2) {
-        // if the puck is in the other half, stay back
-        v_mallet2.y = (4 * TABLE_LENGTH / 5 - m_mallet2.y);
-        v_mallet2.x = (m_puck.x - m_mallet2.x);
-    } else {
-        if (m_mallet2.y > m_puck.y + PUCK_DIAMETER / 2)
-            // if behind puck and I can hit it, then go
-            v_mallet2 = m_puck - m_mallet2;
-        else {
-            // else try to defend the goal
-            v_mallet2 = Vec2d(TABLE_WIDTH / 2, TABLE_LENGTH) - m_mallet2;
+    // limit maximum speed w.r.t. difficulty
+    float my_max_speed = m_difficulty == NIGHTMARE ? MAX_AI_SPEED : MAX_AI_SPEED_EASY;
+
+    // different move pattern by difficulty
+    if (m_difficulty == EASY) {
+        v_mallet2 = m_puck - m_mallet2;
+    }
+    else {
+        if (m_puck.y < TABLE_LENGTH / 2 - PUCK_DIAMETER / 2) {
+            // if the puck is in the other half, stay back
+            v_mallet2.y = (4 * TABLE_LENGTH / 5 - m_mallet2.y);
+            v_mallet2.x = (m_puck.x - m_mallet2.x);
+        } else {
+            if (m_mallet2.y < m_puck.y + PUCK_DIAMETER / 2) {
+                // if the puck is already behind the AI, try to defend
+                if (m_puck.x > TABLE_WIDTH / 2)
+                    v_mallet2 = Vec2d(TABLE_WIDTH / 2 + GOAL_WIDTH / 4, TABLE_LENGTH) - m_mallet2;
+                else
+                    v_mallet2 = Vec2d(TABLE_WIDTH / 2 - GOAL_WIDTH / 4, TABLE_LENGTH) - m_mallet2;
+            }
+            else {
+                // else I go hit it
+                v_mallet2 = m_puck - m_mallet2;
+            }
         }
     }
 
+    // limit mallet2 only move in self side
     if (m_mallet2.y < TABLE_LENGTH / 2 + MALLET_DIAMETER / 2 && v_mallet2.y < 0)
         v_mallet2.y = 0;
-    if (v_mallet2.norm() > MAX_MALLET_SPEED)
-        v_mallet2 = v_mallet2.unit() * MAX_MALLET_SPEED;
+
+    // limit maximum speed
+    if (m_difficulty == NIGHTMARE || v_mallet2.norm() > my_max_speed)
+        v_mallet2 = v_mallet2.unit() * my_max_speed;
 }
 
 void Game::init() {
