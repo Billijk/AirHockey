@@ -50,6 +50,7 @@ public:
 	}
 
     void init();
+	void clear_score();
     void moveMouse(float x, float y);	// 接收鼠标移动事件，更新mallet位置
     void update(void);					// 更新puck位置，更新对手位置，计算碰撞事件等……
 
