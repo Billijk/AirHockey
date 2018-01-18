@@ -16,18 +16,19 @@ private:
     Difficulty m_difficulty;
     GameState m_state;
 
-	bool puck_collide_wall();
+	bool puck_collide_wall(void);
     bool collide_wall(const Pos2d& obj, const float radius, Vec2d& objv);
     bool collide_free_mallet(const Pos2d& obj1, const float radius1, Vec2d& objv1, 
                 const Pos2d& obj2, const float radius2, Vec2d& objv2);
     bool collide_controlled_mallet(const Pos2d& obj1, const float radius1, Vec2d& objv1, 
                 const Pos2d& obj2, const float radius2, const Vec2d& objv2);
     
-    void hard_check_positions();
-    void check_goal();
+    void hard_check_positions(void);
+    void check_goal(void);
+    void init(void);
 
-    void update_positions();
-    void AI_move();
+    void update_positions(void);
+    void AI_move(void);
 
 public:
     Game();
@@ -49,10 +50,10 @@ public:
 			return "NIGHTMARE";}
 	}
 
-    void init();
     void moveMouse(float x, float y);	// 接收鼠标移动事件，更新mallet位置
     void update(void);					// 更新puck位置，更新对手位置，计算碰撞事件等……
 
-    void difficulty_up();
-    void difficulty_down();
+    void reset(void);
+    void difficulty_up(void);
+    void difficulty_down(void);
 };

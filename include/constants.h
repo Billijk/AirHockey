@@ -24,3 +24,6 @@ const float MALLET_HIT_ENERGY_LOSS_RATIO = 0.25;
 const float MALLET_COLLISION_ENERGY_LOSS_RATIO = 0.65;
 const float MAX_AI_SPEED_EASY = 0.0015;
 const float MAX_AI_SPEED = 0.003;
+
+// ASCII字符总共只有0到127，一共128种字符
+const int MAX_CHAR = 128;

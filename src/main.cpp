@@ -1,13 +1,3 @@
-/*
- * OpenGL(R) is a registered trademark of Silicon Graphics, Inc.
- */
-
-/*
- *  cube.c
- *  This program demonstrates a single modeling transformation,
- *  glScalef() and a single viewing transformation, gluLookAt().
- *  A wireframe cube is rendered.
- */
 #include "constants.h"
 #include "common.h"
 #include "game.h"
@@ -19,47 +9,9 @@
 #include <cmath>
 #include <ctime>
 
-// ASCII字符总共只有0到127，一共128种字符
-#define MAX_CHAR       128
-
-unsigned char colorBuf[FRAME_WIDTH*FRAME_HEIGHT*3];
-GLfloat light_position[] = { 0.0, 0.0, 2.0, 0.0 };
-
-GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-GLfloat mat_shininess[] = { 150.0 };
-GLfloat mat_ambient[] = { 0.7, 0.7, 0.7, 1.0 };
-GLfloat mat_diffuse[] = { 0.7f, 0.7f, 0.7f, 1.0 };
-
-
-#define checkImageWidth 64
-#define checkImageHeight 64
-static GLubyte checkImage[checkImageHeight][checkImageWidth][4];
-static GLubyte otherImage[checkImageHeight][checkImageWidth][4];
-
-static GLuint texName[2];
-
 Game game;
 float viewx = 0;
 int frameh = FRAME_HEIGHT, framew = FRAME_WIDTH;
-
-void makeCheckImages(void) {
-    int i, j, c;
-    
-    for (i = 0; i < checkImageHeight; i++) {
-        for (j = 0; j < checkImageWidth; j++) {
-            c = ((((i&0x8)==0)^((j&0x8))==0))*255;
-            checkImage[i][j][0] = (GLubyte) c;
-            checkImage[i][j][1] = (GLubyte) c;
-            checkImage[i][j][2] = (GLubyte) c;
-            checkImage[i][j][3] = (GLubyte) 255;
-            c = ((((i&0x10)==0)^((j&0x10))==0))*255;
-            otherImage[i][j][0] = (GLubyte) c;
-            otherImage[i][j][1] = (GLubyte) 0;
-            otherImage[i][j][2] = (GLubyte) 0;
-            otherImage[i][j][3] = (GLubyte) 255;
-        }
-    }
-}
 
 
 void init(void) {
@@ -68,42 +20,6 @@ void init(void) {
     glClearDepth(1.0f);                                     // Depth Buffer Setup
     glEnable(GL_DEPTH_TEST);                                // Enables Depth Testing
     glDepthFunc(GL_LEQUAL);                                 // The Type Of Depth Testing To Do
-
-/*    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
-
-    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-    makeCheckImages();
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    glGenTextures(2, texName);
-    glBindTexture(GL_TEXTURE_2D, texName[0]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
-                   GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
-                   GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkImageWidth,
-                checkImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                checkImage);
-
-    glBindTexture(GL_TEXTURE_2D, texName[1]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkImageWidth, 
-                checkImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-                otherImage);*/
-   
 }
 
 
@@ -133,13 +49,6 @@ void display(void) {
     Pos2d b = game.puckPos();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);     // Clear Screen And Depth Buffer
-    //glLoadIdentity();                                       // Reset The Current Modelview Matrix
-    //glTranslatef(0.0f,0.0f,-6.0f);                          // Move Right 1.5 Units And Into The Screen 6.0
-
-    //glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);    
-    
-    //glEnable(GL_LIGHTING);
-    //glEnable(GL_LIGHT0);
 
 	glColor3f(1.0f, 1.0f, 1.0f);
     glRasterPos3f(-0.35f, 0.0f, 2.0f);
@@ -297,31 +206,6 @@ void display(void) {
 	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
 	glEnd();
 
-
-/*    //Draw Circle
-    glBegin(GL_POLYGON);
-    glColor3f(0.0f, 1.0f, 0.5f);
-    float ax = (a.x - TABLE_WIDTH / 2) * K, ay = (a.y - TABLE_LENGTH / 2) * K;
-    for(double i = 0; i < 2 * PI; i += PI / 24)
-        glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + ax, sin(i) * MALLET_DIAMETER * K / 2 + ay, 0.0);
-    glEnd();
-    //Draw Circle
-    glBegin(GL_POLYGON);
-    glColor3f(0.0f, 0.5f, 1.0f);
-    float cx = (c.x - TABLE_WIDTH / 2) * K, cy = (c.y - TABLE_LENGTH / 2) * K;
-    for(double i = 0; i < 2 * PI; i += PI / 24)
-        glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + cx, sin(i) * MALLET_DIAMETER * K / 2 + cy, 0.0);
-    glEnd();
-
-    //Draw Puck
-    glBegin(GL_POLYGON);
-    glColor3f(1.0f, 0.2f, 0.3f);
-    float bx = (b.x - TABLE_WIDTH / 2) * K, by = (b.y - TABLE_LENGTH / 2) * K;
-    for(double i = 0; i < 2 * PI; i += PI / 24)
-        glVertex3f(cos(i) * PUCK_DIAMETER * K / 2 + bx, sin(i) * PUCK_DIAMETER * K / 2 + by, 0.0);
-    glEnd();*/
-
-
 	//Draw Mallet1
     glBegin(GL_QUAD_STRIP);
     glColor3f(0.0f, 1.0f, 0.0f);
@@ -419,7 +303,7 @@ void keyboard(unsigned char key, int x, int y) {
             exit(0);
             break;
         case 'r':
-            game.init();
+            game.reset();
             break;
    }
 }

@@ -5,8 +5,7 @@
 #include <cmath>
 
 Game::Game() {
-    m_difficulty = EASY;
-    init();
+    reset();
 }
 
 Game::~Game() {
@@ -234,6 +233,12 @@ void Game::update() {
         update_positions();
         AI_move();
     }
+}
+
+void Game::reset() {
+    m_difficulty = EASY;
+    m_score1 = m_score2 = 0;
+    init();
 }
 
 void Game::difficulty_up() {
