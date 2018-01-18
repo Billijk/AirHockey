@@ -208,7 +208,7 @@ void display(void) {
 	lx = fpx + t * px;
 	ly = fpy + t * py;
 	glRasterPos3f(lx, ly, -0.1f);
-	drawString("[esc]:EXIT [i]INIT POSITION [r]:RESET GAME");
+	drawString("[esc]:EXIT [i]:INIT POSITION [r]:RESET GAME");
 	
 	winX = framew - 300;
 	winY = frameh - 35;
@@ -224,7 +224,7 @@ void display(void) {
 	lx = fpx + t * px;
 	ly = fpy + t * py;
 	glRasterPos3f(lx, ly, -0.1f);
-	drawString("[left][right]:VIEW [up][down]:DIFFICULTY");
+	drawString("[left]/[right]:VIEW [up]/[down]:DIFFICULTY");
 
 	//Draw Objects
 	float K = 1;
@@ -312,6 +312,15 @@ void display(void) {
 	glVertex3f(K * (TABLE_WIDTH / 3 - 0.2), -K * (TABLE_LENGTH / 3 + 0.2), -4.0);
 	glEnd();*/
 
+
+	//Draw Mid Line
+	/*glBegin(GL_QUAD_STRIP);
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glVertex3f(K * (TABLE_WIDTH / 2), 0.0, 0.1);
+	glVertex3f(K * (TABLE_WIDTH / 2), 0.0, 0.0);
+	glVertex3f(-K * (TABLE_WIDTH / 2), 0.0, 0.1);
+	glVertex3f(-K * (TABLE_WIDTH / 2), 0.0, 0.0);
+	glEnd();*/
 
 	//Draw Wall
 	glBegin(GL_QUAD_STRIP);
@@ -404,7 +413,7 @@ void display(void) {
 
 	//Draw Mallet1
 	glBegin(GL_QUAD_STRIP);
-	glColor3f(0.0f, 1.0f, 0.0f);
+	glColor3f(0.0f, 1.0f, 0.5f);
 	float ax = (a.x - TABLE_WIDTH / 2) * K, ay = (a.y - TABLE_LENGTH / 2) * K;
 	for(double i = 0; i < 2 * PI; i += PI / 24)
 	{
@@ -445,7 +454,7 @@ void display(void) {
 	glEnd();
 
 	//Draw Puck
-	glBegin(GL_POLYGON);
+	glBegin(GL_QUAD_STRIP);
 	glColor3f(1.0f, 0.2f, 0.3f);
 	float bx = (b.x - TABLE_WIDTH / 2) * K, by = (b.y - TABLE_LENGTH / 2) * K;
 	for(double i = 0; i <= 2 * PI; i += PI / 24)

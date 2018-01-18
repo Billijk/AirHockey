@@ -174,7 +174,7 @@ void Game::moveMouse(float x, float y) {
 	if (x < MALLET_DIAMETER / 2) x = MALLET_DIAMETER / 2 + EPS;
 	else if (x > TABLE_WIDTH - MALLET_DIAMETER / 2) x = TABLE_WIDTH - MALLET_DIAMETER / 2 - EPS;
 	if (y < MALLET_DIAMETER / 2) y = MALLET_DIAMETER / 2 + EPS;
-	else if (y > TABLE_WIDTH - MALLET_DIAMETER / 2) y = TABLE_WIDTH - MALLET_DIAMETER / 2 - EPS;
+	else if (y > TABLE_LENGTH / 2 - MALLET_DIAMETER / 2) y = TABLE_LENGTH / 2 - MALLET_DIAMETER / 2 - EPS;
 
 	// save current valid mallet destination
 	current_mouse_pos = Vec2d(x, y);
@@ -217,8 +217,10 @@ void Game::AI_move() {
 	}
 
 	// limit mallet2 only move in self side
-	if (m_mallet2.y < TABLE_LENGTH / 2 + MALLET_DIAMETER / 2 && v_mallet2.y < 0)
+	if (m_mallet2.y < TABLE_LENGTH / 2 + MALLET_DIAMETER / 2 && v_mallet2.y < 0) {
+		m_mallet2.y = TABLE_LENGTH / 2 + MALLET_DIAMETER / 2 + EPS;
 		v_mallet2.y = 0;
+	}
 
 	// limit maximum speed
 	if (m_difficulty == NIGHTMARE || v_mallet2.norm() > my_max_speed)
