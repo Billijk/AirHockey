@@ -6,6 +6,7 @@
 
 Game::Game() {
 	m_difficulty = EASY;
+	clear_score();
 	init();
 }
 
@@ -168,6 +169,7 @@ void Game::update_positions() {
 
 	// if goal update score
 	check_goal();
+
 }
 
 void Game::moveMouse(float x, float y) {
@@ -182,49 +184,49 @@ void Game::moveMouse(float x, float y) {
 }
 
 void Game::AI_move() {
-	// EASY: always chase the puck
-	// HARD: add defence strategy
-	// NIGHTMARE: move faster
+    // EASY: always chase the puck
+    // HARD: add defence strategy
+    // NIGHTMARE: move faster
 
-	// only by a chance it can react
-	if (rand() % (int)m_difficulty) return;
+    // limit mallet2 only move in self side
+    if (m_mallet2.y < TABLE_LENGTH / 2 + MALLET_DIAMETER / 2) {
+        if (v_mallet2.y < 0) v_mallet2.y = 0;
+        m_mallet2.y = TABLE_LENGTH / 2 + MALLET_DIAMETER / 2 + EPS;
+    }
 
-	// limit maximum speed w.r.t. difficulty
-	float my_max_speed = m_difficulty == NIGHTMARE ? MAX_AI_SPEED : MAX_AI_SPEED_EASY;
+    // only by a chance it can react
+    if (rand() % (int)m_difficulty) return;
 
-	// different move pattern by difficulty
-	if (m_difficulty == EASY) {
-		v_mallet2 = m_puck - m_mallet2;
-	}
-	else {
-		if (m_puck.y < TABLE_LENGTH / 2 - PUCK_DIAMETER / 2) {
-			// if the puck is in the other half, stay back
-			v_mallet2.y = (4 * TABLE_LENGTH / 5 - m_mallet2.y);
-			v_mallet2.x = (m_puck.x - m_mallet2.x);
-		} else {
-			if (m_mallet2.y < m_puck.y + PUCK_DIAMETER / 2) {
-				// if the puck is already behind the AI, try to defend
-				if (m_puck.x > TABLE_WIDTH / 2)
-					v_mallet2 = Vec2d(TABLE_WIDTH / 2 + GOAL_WIDTH / 4, TABLE_LENGTH) - m_mallet2;
-				else
-					v_mallet2 = Vec2d(TABLE_WIDTH / 2 - GOAL_WIDTH / 4, TABLE_LENGTH) - m_mallet2;
-			}
-			else {
-				// else I go hit it
-				v_mallet2 = m_puck - m_mallet2;
-			}
-		}
-	}
+    // limit maximum speed w.r.t. difficulty
+    float my_max_speed = m_difficulty == NIGHTMARE ? MAX_AI_SPEED : MAX_AI_SPEED_EASY;
 
-	// limit mallet2 only move in self side
-	if (m_mallet2.y < TABLE_LENGTH / 2 + MALLET_DIAMETER / 2 && v_mallet2.y < 0) {
-		m_mallet2.y = TABLE_LENGTH / 2 + MALLET_DIAMETER / 2 + EPS;
-		v_mallet2.y = 0;
-	}
+    // different move pattern by difficulty
+    if (m_difficulty == EASY) {
+        v_mallet2 = m_puck - m_mallet2;
+    }
+    else {
+        if (m_puck.y < TABLE_LENGTH / 2 - PUCK_DIAMETER / 2) {
+            // if the puck is in the other half, stay back
+            v_mallet2.y = (4 * TABLE_LENGTH / 5 - m_mallet2.y);
+            v_mallet2.x = (m_puck.x - m_mallet2.x);
+        } else {
+            if (m_mallet2.y < m_puck.y + PUCK_DIAMETER / 2) {
+                // if the puck is already behind the AI, try to defend
+                if (m_puck.x > TABLE_WIDTH / 2)
+                    v_mallet2 = Vec2d(TABLE_WIDTH / 2 + GOAL_WIDTH / 4, TABLE_LENGTH) - m_mallet2;
+                else
+                    v_mallet2 = Vec2d(TABLE_WIDTH / 2 - GOAL_WIDTH / 4, TABLE_LENGTH) - m_mallet2;
+            }
+            else {
+                // else I go hit it
+                v_mallet2 = m_puck - m_mallet2;
+            }
+        }
+    }
 
-	// limit maximum speed
-	if (m_difficulty == NIGHTMARE || v_mallet2.norm() > my_max_speed)
-		v_mallet2 = v_mallet2.unit() * my_max_speed;
+    // limit maximum speed
+    if (m_difficulty == NIGHTMARE || v_mallet2.norm() > my_max_speed)
+        v_mallet2 = v_mallet2.unit() * my_max_speed;
 }
 
 void Game::init() {

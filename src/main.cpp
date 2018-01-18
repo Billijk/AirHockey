@@ -1,3 +1,4 @@
+
 /*
 * OpenGL(R) is a registered trademark of Silicon Graphics, Inc.
 */
@@ -18,9 +19,6 @@
 #include <stdlib.h>
 #include <cmath>
 #include <ctime>
-
-#include <iostream>
-using namespace std;
 
 // ASCII字符总共只有0到127，一共128种字符
 #define MAX_CHAR       128
@@ -44,6 +42,7 @@ static GLuint texName[2];
 Game game;
 float viewx = 0;
 int frameh = FRAME_HEIGHT, framew = FRAME_WIDTH;
+
 
 void makeCheckImages(void) {
 	int i, j, c;
@@ -71,42 +70,6 @@ void init(void) {
 	glClearDepth(1.0f);                                     // Depth Buffer Setup
 	glEnable(GL_DEPTH_TEST);                                // Enables Depth Testing
 	glDepthFunc(GL_LEQUAL);                                 // The Type Of Depth Testing To Do
-
-	/*    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
-
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
-	makeCheckImages();
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	glGenTextures(2, texName);
-	glBindTexture(GL_TEXTURE_2D, texName[0]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 
-	GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 
-	GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkImageWidth,
-	checkImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-	checkImage);
-
-	glBindTexture(GL_TEXTURE_2D, texName[1]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkImageWidth, 
-	checkImageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, 
-	otherImage);*/
-
 }
 
 void selectFont(int size, int charset, const char* face) {
@@ -194,7 +157,7 @@ void display(void) {
 	sprintf(difficulty, "Difficulty : %s", game.difficulty().c_str()); 
 	drawString(difficulty);
 	
-	winX = framew - 300;
+	winX = framew - 310;
 	winY = frameh - 15;
 	glGetIntegerv(GL_VIEWPORT, viewport); 
 	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);   
@@ -210,7 +173,7 @@ void display(void) {
 	glRasterPos3f(lx, ly, -0.1f);
 	drawString("[esc]:EXIT [i]:INIT POSITION [r]:RESET GAME");
 	
-	winX = framew - 300;
+	winX = framew - 310;
 	winY = frameh - 35;
 	glGetIntegerv(GL_VIEWPORT, viewport); 
 	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);   
@@ -385,30 +348,6 @@ void display(void) {
 	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.0);
 	glVertex3f(-K * (GOAL_WIDTH / 2), K * (TABLE_LENGTH / 2), 0.1);
 	glEnd();
-
-
-	/*    //Draw Circle
-	glBegin(GL_POLYGON);
-	glColor3f(0.0f, 1.0f, 0.5f);
-	float ax = (a.x - TABLE_WIDTH / 2) * K, ay = (a.y - TABLE_LENGTH / 2) * K;
-	for(double i = 0; i < 2 * PI; i += PI / 24)
-	glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + ax, sin(i) * MALLET_DIAMETER * K / 2 + ay, 0.0);
-	glEnd();
-	//Draw Circle
-	glBegin(GL_POLYGON);
-	glColor3f(0.0f, 0.5f, 1.0f);
-	float cx = (c.x - TABLE_WIDTH / 2) * K, cy = (c.y - TABLE_LENGTH / 2) * K;
-	for(double i = 0; i < 2 * PI; i += PI / 24)
-	glVertex3f(cos(i) * MALLET_DIAMETER * K / 2 + cx, sin(i) * MALLET_DIAMETER * K / 2 + cy, 0.0);
-	glEnd();
-
-	//Draw Puck
-	glBegin(GL_POLYGON);
-	glColor3f(1.0f, 0.2f, 0.3f);
-	float bx = (b.x - TABLE_WIDTH / 2) * K, by = (b.y - TABLE_LENGTH / 2) * K;
-	for(double i = 0; i < 2 * PI; i += PI / 24)
-	glVertex3f(cos(i) * PUCK_DIAMETER * K / 2 + bx, sin(i) * PUCK_DIAMETER * K / 2 + by, 0.0);
-	glEnd();*/
 
 
 	//Draw Mallet1
