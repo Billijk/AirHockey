@@ -13,16 +13,6 @@ Game::~Game() {
 }
 
 bool Game::puck_collide_wall() {
-	if (m_puck.y < 0) {
-		m_score2 += 1;
-		init();
-		return true;
-	}
-	if (m_puck.y > TABLE_LENGTH) {
-		m_score1 += 1;
-		init();
-		return true;
-    }
 	if (m_puck.y - PUCK_DIAMETER / 2 < EPS && 
 		m_puck.x - PUCK_DIAMETER / 2 > (TABLE_WIDTH - GOAL_WIDTH) / 2 &&
 		m_puck.x + PUCK_DIAMETER / 2 < (TABLE_WIDTH + GOAL_WIDTH) / 2) {
@@ -119,31 +109,58 @@ bool Game::collide_controlled_mallet(const Pos2d& obj1, const float radius1, Vec
     return true;
 }
 
+void Game::hard_check_positions() {
+    // first check puck and wall
+    if (m_puck.x < PUCK_DIAMETER / 2) m_puck.x = PUCK_DIAMETER / 2;
+    else if (m_puck.x > TABLE_WIDTH - PUCK_DIAMETER / 2) m_puck.x = TABLE_WIDTH - PUCK_DIAMETER / 2;
+    if (m_puck.y < PUCK_DIAMETER / 2 && 
+        (m_puck.x - PUCK_DIAMETER / 2 < (TABLE_WIDTH - GOAL_WIDTH) / 2 ||
+		m_puck.x + PUCK_DIAMETER / 2 > (TABLE_WIDTH + GOAL_WIDTH) / 2)) 
+        m_puck.y = PUCK_DIAMETER / 2;
+    else if (m_puck.y > TABLE_LENGTH - PUCK_DIAMETER / 2 && 
+        (m_puck.x - PUCK_DIAMETER / 2 < (TABLE_WIDTH - GOAL_WIDTH) / 2 ||
+		m_puck.x + PUCK_DIAMETER / 2 > (TABLE_WIDTH + GOAL_WIDTH) / 2)) 
+        m_puck.y = TABLE_LENGTH - PUCK_DIAMETER / 2;
+
+    // then check mallet and puck
+    if ((m_mallet1 - m_puck).norm() < (PUCK_DIAMETER + MALLET_DIAMETER) / 2)
+        m_mallet1 = m_puck + (m_mallet1 - m_puck).unit() * (PUCK_DIAMETER + MALLET_DIAMETER) / 2;
+    if ((m_mallet2 - m_puck).norm() < (PUCK_DIAMETER + MALLET_DIAMETER) / 2)
+        m_mallet2 = m_puck + (m_mallet2 - m_puck).unit() * (PUCK_DIAMETER + MALLET_DIAMETER) / 2;
+}
+
+void Game::check_goal() {
+    if (m_puck.y < 0) {
+		m_score2 += 1;
+		init();
+	}
+	if (m_puck.y > TABLE_LENGTH) {
+		m_score1 += 1;
+		init();
+    }
+}
+
 void Game::update_positions() {
-    //collide_wall(m_puck, PUCK_DIAMETER / 2, v_puck);
+    // update object positions
+    m_puck += v_puck;
+    m_mallet1 += v_mallet1;
+    m_mallet2 += v_mallet2;
+
+    // calculate collisions
+    puck_collide_wall();
     collide_wall(m_mallet2, MALLET_DIAMETER / 2, v_mallet2);
-    // TODO: also regard mallet2 as controlled object (controlled by AI)
     
     collide_controlled_mallet(m_puck, PUCK_DIAMETER / 2, v_puck, m_mallet1, MALLET_DIAMETER / 2, v_mallet1);
-    collide_controlled_mallet(m_puck, PUCK_DIAMETER / 2, v_puck, m_mallet2, MALLET_DIAMETER / 2, v_mallet2);
-    //collide_controlled_mallet(m_mallet2, MALLET_DIAMETER / 2, v_mallet2, m_mallet1, MALLET_DIAMETER / 2, v_mallet1);
-    
-    // update object positions
-    //if (!collide_wall(m_puck, PUCK_DIAMETER / 2, v_puck.copy()))
-    m_puck += v_puck;
-    //else v_puck = Vec2d(0, 0);
+    collide_controlled_mallet(m_puck, PUCK_DIAMETER / 2, v_puck, m_mallet2, MALLET_DIAMETER / 2, v_mallet2);    
 
-    //if (!collide_controlled_mallet(m_puck, PUCK_DIAMETER / 2, v_puck.copy(), m_mallet1, MALLET_DIAMETER / 2, v_mallet1.copy()))
-    m_mallet1 += v_mallet1;
-    
-    //if (!collide_controlled_mallet(m_puck, PUCK_DIAMETER / 2, v_puck.copy(), m_mallet2, MALLET_DIAMETER / 2, v_mallet2.copy()))
-    m_mallet2 += v_mallet2;
+    // deal with exceptions: force positions to be correct
+    hard_check_positions();
 
     // update mallet1 velocity according to current mouse position
     v_mallet1 = (current_mouse_pos - m_mallet1) / MOUSE_SPEED_RATIO;
 
 	// if goal update score
-	puck_collide_wall();
+	check_goal();
 }
 
 void Game::moveMouse(float x, float y) {

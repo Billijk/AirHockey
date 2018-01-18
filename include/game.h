@@ -22,6 +22,9 @@ private:
                 const Pos2d& obj2, const float radius2, Vec2d& objv2);
     bool collide_controlled_mallet(const Pos2d& obj1, const float radius1, Vec2d& objv1, 
                 const Pos2d& obj2, const float radius2, const Vec2d& objv2);
+    
+    void hard_check_positions();
+    void check_goal();
 
     void update_positions();
     void AI_move();
